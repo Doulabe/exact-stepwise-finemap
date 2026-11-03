@@ -49,7 +49,7 @@ if (file.exists(PO)) {
 }
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  "\\caption{\\rev{\\textbf{Synthetic AR(1) design under the four prior scenarios.} Mean number of causal SNPs recovered (out of $15$) at fixed $K=15$, averaged over $\\rho\\in\\{0.8,0.95,0.98\\}$ ($m=5{,}000$, $\\gamma=0.6$, $\\tau_j=0.2$, $B=50$). Scenarios as in Table~\\ref{tab:parameters}. The first row is the prior-only reference, which ranks by $p_j$ with ties broken by the marginal $|r|$ on the same data sets. It bounds what prior tracking alone achieves in each scenario, and the margin of a method over it is the contribution of the data.}}",
+  "\\caption{\\rev{\\textbf{Controlled AR(1) results across prior scenarios.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $n=80$ and $n=1000$, averaged over the three LD levels.}}",
   "\\label{tab:synth_scenarios}", "\\scriptsize", "\\setlength{\\tabcolsep}{4pt}",
   "\\begin{tabular}{lcccccccc}", "\\toprule",
   " & \\multicolumn{4}{c}{$n=80$} & \\multicolumn{4}{c}{$n=1000$} \\\\",
@@ -69,7 +69,7 @@ row2 <- function(m) {
 }
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  "\\caption{\\rev{\\textbf{Single-locus design under the four prior scenarios.} Mean number of causal variants recovered (out of $3$) at fixed $K=3$ ($m_{\\text{locus}}=200$, $\\rho=0.9$, $n=1000$, $B=200$). CARMA, FINEMAP and SuSiE\\textsubscript{unif} ignore the prior, while CARMA\\textsubscript{p} receives $\\mathrm{logit}(p_j)$ as an annotation whose weight it estimates.}}",
+  "\\caption{\\rev{\\textbf{Single-locus prior sensitivity.} Mean causal variants recovered out of $3$ at fixed $K=3$ across the four prior scenarios.}}",
   "\\label{tab:locus_scenarios}", "\\small", "\\setlength{\\tabcolsep}{6pt}",
   "\\begin{tabular}{lcccc}", "\\toprule",
   paste0("Method & ", paste(SC, collapse = " & "), " \\\\"), "\\midrule",
@@ -97,7 +97,7 @@ cat(sprintf("max |M(ExM) - M(NaM)|: n = 80 %.3f, other designs %.3f\n", gap, gap
 nb <- names(blocks)
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  sprintf("\\caption{\\rev{\\textbf{Stopping rules for the joint scores.} Mean number of causal variants recovered by ExM and mean selected size $\\hat K$ (in brackets) under each rule, for $15$ causal SNPs (AR(1), averaged over $\\rho$, cap $30$) and $3$ causal variants (locus), $n=1000$ unless stated. NaM differs by at most $%.2f$ at $n=1000$ and $%.1f$ at $n=80$.}}", max(0.01, ceiling(gap_other * 100) / 100), ceiling(gap * 10) / 10),
+  "\\caption{\\rev{\\textbf{Stopping rules for ExM.} Mean causal variants recovered with mean selected size in brackets across controlled and single-locus designs.}}",
   "\\label{tab:stop_joint}", "\\scriptsize", "\\setlength{\\tabcolsep}{3pt}",
   paste0("\\begin{tabular}{l", strrep("c", length(rules)), "}"), "\\toprule",
   paste0("Design and prior & ", paste(rules, collapse = " & "), " \\\\"), "\\midrule",

@@ -48,7 +48,7 @@ HEAD <- file.path(OUT, "headline_numbers.txt")
 if (file.exists(HEAD)) invisible(file.remove(HEAD))
 say <- function(...) cat(paste(c(...), collapse = "\n"), "\n", file = HEAD, append = TRUE, sep = "")
 
-fmt  <- function(x, d) ifelse(is.na(x) | !is.finite(x), "{--}", sprintf(paste0("%.", d, "f"), x))
+fmt  <- function(x, d) ifelse(is.na(x) | !is.finite(x), "{NA}", sprintf(paste0("%.", d, "f"), x))
 pretty <- c(Naive_Wald = "NaW", Asymptotic_Wald = "AsW", Exact_Wald = "ExW",
             Asymptotic_Score = "AsS", Naive_Multiple = "NaM", Exact_Multiple = "ExM",
             SuSiE_unif = "SuSiE\\textsubscript{unif}", SuSiE_prior = "SuSiE\\textsubscript{prior}",
@@ -115,7 +115,7 @@ if (has("results_bench_synth_informative.rds")) {
   }
   writeLines(c(
     "\\begin{table}[htbp]", "\\centering",
-    "\\caption{\\textbf{Synthetic AR(1) LD sensitivity}: F1 across $\\rho\\in\\{0.80,0.95,0.98\\}$ on a synthetic design ($m=5{,}000$, $100$ AR(1) blocks of $50$), \\textit{informative} prior, fixed-$K$, $\\gamma=0.6$, $\\tau_j=0.2$. varbvs omitted \\rev{because its runtime was prohibitive at $m=5{,}000$ in this simulation grid}. \\rev{The prior-only reference ranks by $p_j$ with ties broken by the marginal $|r|$ on the same data sets. This oracle prior identifies the causal set by construction, so the column reads as prior tracking, and the margin of a method over the reference is the contribution of the data.}}",
+  "\\caption{\\textbf{Oracle-prior AR(1) sensitivity.} F1 at fixed $K=15$ across the three LD levels for $n=1000$. The prior-only row ranks by $p_j$ with marginal $|r|$ used to break ties.}",
     "\\label{tab:synth_informative_fixed}",
     "\\setlength{\\tabcolsep}{4pt}", "\\renewcommand{\\arraystretch}{1.0}", "\\small",
     "\\begin{tabular}{lccc}", "\\toprule",
@@ -142,7 +142,7 @@ if (has("results_bench_synth_informative_adaptive.rds")) {
 # ---- 2. Single-locus tables (supplement) --------------------------------
 locus_row_cells <- function(r) c(fmt(r$mean_M, 2), fmt(r$mean_K, 1), fmt(r$precision, 3),
                                  fmt(r$recall, 3), fmt(r$F1, 3), fmt(r$FDR, 3))
-bold <- function(cells) ifelse(cells == "{--}", cells, paste0("\\textbf{", cells, "}"))
+bold <- function(cells) ifelse(cells == "{NA}", cells, paste0("\\textbf{", cells, "}"))
 
 if (has("results_locus_sim_informative_fixed.rds")) {
   s <- read_summary("results_locus_sim_informative_fixed.rds") %>%
@@ -159,7 +159,7 @@ if (has("results_locus_sim_informative_fixed.rds")) {
   }, "")
   writeLines(c(
     "\\begin{table}[htbp]", "\\centering",
-    "\\caption{\\textbf{\\rev{Single-locus} assessment vs.\\ external comparators}, \\textit{informative} prior, fixed-$K$: single AR(1) block ($m_{\\text{locus}}=200$, $\\rho=0.9$), $\\gamma=0.6$, $\\tau_j=0.2$, top-$K=3$. \\textbf{Bold} best F1.}",
+  "\\caption{\\textbf{Single-locus fixed-$K$ comparison.} Performance under the informative prior with $m_{\\mathrm{locus}}=200$, $\\rho=0.9$ and $K=3$.}",
     "\\label{tab:locus_sim_informative_fixed}",
     "\\setlength{\\tabcolsep}{3.5pt}", "\\renewcommand{\\arraystretch}{1.0}", "\\scriptsize",
     "\\begin{tabular}{c l c c c c c c}", "\\toprule",
@@ -203,7 +203,7 @@ if (has("results_locus_sim_informative_adaptive.rds")) {
   }
   writeLines(c(
     "\\begin{table}[htbp]", "\\centering",
-    "\\caption{As Table~\\ref{tab:locus_sim_informative_fixed} but adaptive-$K$ ($\\hat K$ by the \\emph{Criterion} column), while CARMA/FINEMAP run prior-free, varbvs via \\texttt{logodds}. \\rev{Precision and FDR are averaged over the replications with a non-empty selection.}}",
+  "\\caption{\\textbf{Single-locus adaptive comparison.} Performance under the informative prior using each method's stated stopping rule.}",
     "\\label{tab:locus_sim_informative_adaptive}",
     "\\setlength{\\tabcolsep}{3.5pt}", "\\renewcommand{\\arraystretch}{1.0}", "\\scriptsize",
     "\\begin{tabular}{c l l c c c c c c}", "\\toprule",
@@ -232,7 +232,7 @@ if (all(has(sprintf("results_locus_sim_%s.rds", carma_files)))) {
   }
   writeLines(c(
     "\\begin{table}[htbp]", "\\centering",
-    "\\caption{\\textbf{Prior-informed CARMA sensitivity analysis.} Entries are F1 scores in the \\rev{single-locus} assessment. $\\mathrm{CARMA}_{p}$ denotes CARMA run with the same prior-weight information used by the prior-informed competitors, when applicable.}",
+  "\\caption{\\textbf{Prior-informed CARMA sensitivity.} F1 in the single-locus design under informative and uniform priors.}",
     "\\label{tab:carma_prior_sensitivity}", "\\small",
     "\\setlength{\\tabcolsep}{6pt}", "\\renewcommand{\\arraystretch}{1.12}",
     "\\begin{tabular}{llcccc}", "\\toprule",
@@ -248,7 +248,7 @@ if (has("results_locus_sim_informative_adaptive.rds")) {
 }
 
 # ---- 2b. Small n (n = 80), informative prior, tau = 0.2, averaged over rho ----
-signed <- function(x, d) ifelse(is.na(x), "{--}", sprintf(paste0("%+.", d, "f"), x))
+signed <- function(x, d) ifelse(is.na(x), "{NA}", sprintf(paste0("%+.", d, "f"), x))
 if (has("results_bench_synth_informative_n80.rds")) {
   s <- read_summary("results_bench_synth_informative_n80.rds") %>%
     filter(n == 80, criterion == "K_fixed", abs(tau - 0.2) < 1e-9) %>%
@@ -262,7 +262,7 @@ if (has("results_bench_synth_informative_n80.rds")) {
     collapse = " & "), " \\\\")
   writeLines(c(
     "\\begin{table}[H]", "\\centering",
-    "\\caption{\\textbf{Small-sample evaluation at $n=80$ (fixed $K$).} Synthetic AR(1) design, informative prior, $\\tau_j=0.2$, averaged over $\\rho\\in\\{0.8,0.95,0.98\\}$ ($B=50$). Cells: mean causal SNPs recovered out of $15$ (F1 in parentheses). \\rev{The two $\\Delta$ rows give the exact-minus-approximate gain, a finite-sample effect, below $0.2$ by $n=1000$.}}",
+  "\\caption{\\textbf{Small-sample fixed-$K$ results at $n=80$.} The obtained $\\hat M$ (Mean causal variants recovered out of $15$) with F1 in parentheses under the informative prior.}",
     "\\label{tab:smalln}", "\\scriptsize", "\\setlength{\\tabcolsep}{5pt}",
     "\\renewcommand{\\arraystretch}{1.12}", "\\begin{tabular}{lccc}", "\\toprule",
     "\\textbf{Method / contrast} & $\\gamma=0.2$ & $\\gamma=0.6$ & $\\gamma=0.9$ \\\\", "\\midrule",

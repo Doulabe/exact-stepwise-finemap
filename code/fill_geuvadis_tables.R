@@ -57,51 +57,40 @@ permt <- if (file.exists("../results_geuvadis_real_ld_perm.rds"))
   readRDS("../results_geuvadis_real_ld_perm.rds")$table else NULL
 w_n <- wide_rate(ld, "fixedK", "rep_rate_ld")
 w_p <- if (!is.null(permt)) wide_rate(permt, "fixedK", "rep_rate_ld") else NULL
-rows1 <- vapply(seq_len(nrow(w_n)), function(i) {
+row1 <- function(m) {
+  i <- match(m, w_n$method)
   cells <- vapply(names(PRIORS), function(p) {
     s <- fmt(w_n[[p]][i])
     if (!is.null(w_p)) s <- paste0(s, " / ", fmt(w_p[[p]][i]))
     s
   }, "")
-  paste0(w_n$method[i], " & ", paste(cells, collapse = " & "), " \\\\")
-}, "")
+  paste0(m, " & ", paste(cells, collapse = " & "), " \\\\")
+}
+grp <- function(lab) sprintf("\\multicolumn{5}{l}{\\emph{%s}} \\\\", lab)
 lstat <- ld %>% filter(method == "LASSO") %>%
   summarise(v = mean(rep_rate_ld, na.rm = TRUE), K = mean(K, na.rm = TRUE))
 lstat_p <- if (!is.null(permt)) permt %>% filter(method == "LASSO") %>%
   summarise(v = mean(rep_rate_ld, na.rm = TRUE)) else NULL
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\textbf{Cross-population replication of fixed-$K$ selections in the GEUVADIS application.} ",
-         "\\rev{Each cell reports the mean LD-aware replication rate over the 100 genes under the nominal ",
-         "replication test, followed by the rate under a per-window permutation threshold (the $95$th ",
-         "percentile of the maximal $|t|$ statistic over $500$ permutations of the residualized YRI ",
-         "phenotype, a window-wide family-wise criterion that adapts to the local LD):} the fraction of ",
-         "the $K=5$ selected variants in replication-panel LD ($|r| \\geq 0.7$) with a variant that ",
-         "replicates in the YRI set \\rev{(sign-consistent, significant at the respective threshold)}, by ",
-         "prior specification. \\rev{The nominal reading is the more sensitive and the permutation reading ",
-         "the more specific, and they give the same ordering.} The last rows report the prior-free LASSO, ",
-         "which ignores the prior arms and retains $\\hat K$ variants at the one-standard-error penalty",
-         "\\rev{, and the native conditional cis scan of QTLtools \\parencite{delaneau2017}, run on the ",
-         "same windows, phenotype and covariates ($1{,}000$-permutation gene-level calibration at ",
-         "$\\alpha = 0.05$, forward-backward conditional pass, $\\hat K$ being its number of declared ",
-         "independent signals)}."),
-  "}",
+  paste0("\\caption{\\textbf{Fixed-budget cross-population support in GEUVADIS.} ",
+         "All methods in this table select $K=5$ variants per gene. Each cell gives the mean ",
+         "LD-aware support rate over the $100$ genes under the nominal YRI test, followed by the ",
+         "rate under the per-window permutation threshold. The in-house methods and SuSiE receive ",
+         "the same prior weights within each arm.}"),
   "\\label{tab:geuvadis_fixedK}",
   "\\centering\\small",
   "\\setlength{\\tabcolsep}{4pt}",
   "\\begin{tabular}{lcccc}", "\\toprule",
   paste0("Method & ", paste(PRIORS, collapse = " & "), " \\\\"), "\\midrule",
-  rows1,
-  "\\midrule",
-  sprintf("LASSO (prior-free) & \\multicolumn{4}{c}{%s%s \\quad ($\\hat K = %.1f$)} \\\\",
-          fmt(lstat$v),
-          if (!is.null(lstat_p)) paste0(" / ", fmt(lstat_p$v)) else "", lstat$K),
-  if (file.exists("../results_qtltools_eval.rds")) {
-    q <- readRDS("../results_qtltools_eval.rds")$table
-    sprintf("\\rev{QTLtools (prior-free)} & \\multicolumn{4}{c}{%s / %s \\quad ($\\hat K = %.1f$)} \\\\",
-            fmt(mean(q$rep_rate_ld, na.rm = TRUE)),
-            fmt(mean(q$rep_rate_ld_perm, na.rm = TRUE)), mean(q$K))
-  } else character(0),
+  grp("Single-SNP stepwise scores"),
+  vapply(c("NaW", "AsW", "ExW", "AsS"), row1, ""),
+  "\\addlinespace",
+  grp("Joint stepwise scores"),
+  vapply(c("NaM", "ExM"), row1, ""),
+  "\\addlinespace",
+  grp("Fine-mapping comparator at the same budget"),
+  row1("SuSiE"),
   "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_fixedK.tex")
 cat("Wrote ../tab_geuvadis_fixedK.tex \n")
 
@@ -120,23 +109,34 @@ rows2 <- vapply(seq_len(nrow(w_n_bic)), function(i) {
   }, "")
   paste0(w_n_bic$method[i], " & ", paste(cells, collapse = " & "), " \\\\")
 }, "")
+row2 <- function(m) rows2[match(m, w_n_bic$method)]
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\textbf{Adaptive BIC-stopped selections in the GEUVADIS application.} ",
-         "\\rev{Each cell reports the mean LD-aware replication rate over the 100 genes under the ",
-         "nominal replication test, followed by the rate under the per-window permutation threshold ",
-         "of Table~\\ref{tab:geuvadis_fixedK}} (mean selected size $\\hat K$ in parentheses, ",
-         "iteration cap 30), by prior specification. The joint methods stop at compact selections ",
-         "\\rev{($\\hat K \\approx 1.5$--$2$) whose replication rates exceed, under both readings, ",
-         "the field-standard QTLtools conditional scan, the natural comparator at this operating ",
-         "point ($\\hat K = 1.5$, $0.79$ nominal and $0.52$ permutation-controlled, ",
-         "Table~\\ref{tab:geuvadis_fixedK}), and the fixed-$K=5$ SuSiE selection of the same table}.}"),
+  paste0("\\caption{\\textbf{Adaptive and native sparse selections in GEUVADIS.} ",
+         "For the in-house methods, each cell reports nominal / permutation-controlled LD-aware ",
+         "support, with the mean BIC-selected size $\\hat K$ in parentheses. LASSO and QTLtools ",
+         "are prior-free external references shown at their native operating points and therefore ",
+         "have one value across prior arms.}"),
   "\\label{tab:geuvadis_adaptive}",
-  "\\centering\\small",
-  "\\setlength{\\tabcolsep}{4pt}",
+  "\\centering\\footnotesize",
+  "\\setlength{\\tabcolsep}{3.5pt}",
   "\\begin{tabular}{lcccc}", "\\toprule",
   paste0("Method & ", paste(PRIORS, collapse = " & "), " \\\\"), "\\midrule",
-  rows2,
+  grp("BIC-stopped single-SNP scores"),
+  vapply(c("NaW", "AsW", "ExW", "AsS"), row2, ""),
+  "\\addlinespace",
+  grp("BIC-stopped joint scores"),
+  vapply(c("NaM", "ExM"), row2, ""),
+  "\\midrule",
+  sprintf("LASSO (1-SE, prior-free) & \\multicolumn{4}{c}{%s%s \\quad ($\\hat K=%.1f$)} \\\\",
+          fmt(lstat$v),
+          if (!is.null(lstat_p)) paste0(" / ", fmt(lstat_p$v)) else "", lstat$K),
+  if (file.exists("../results_qtltools_eval.rds")) {
+    q <- readRDS("../results_qtltools_eval.rds")$table
+    sprintf("QTLtools (prior-free) & \\multicolumn{4}{c}{%s / %s \\quad ($\\hat K=%.1f$)} \\\\",
+            fmt(mean(q$rep_rate_ld, na.rm = TRUE)),
+            fmt(mean(q$rep_rate_ld_perm, na.rm = TRUE)), mean(q$K))
+  } else character(0),
   "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_adaptive.tex")
 cat("Wrote ../tab_geuvadis_adaptive.tex \n")
 
@@ -176,12 +176,9 @@ rows <- vapply(METHODS, function(m) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\textbf{Semi-synthetic evaluation on real GEUVADIS cis windows.} ",
-         "Mean number of causal LD clusters tagged (out of $K_{true}=5$, $|r| \\geq 0.7$) over thirty gene ",
-         "windows spanning the eGene list ($B=50$ replications per window and sample size), by subsample ",
-         "size $n$ and prior arm. True causal variants are drawn with probability proportional to the ",
-         "PolyFun per-SNP weights, so the PolyFun arm is the truth-aligned prior in this design and the ",
-         "uniform arm is neutral.}"),
+  paste0("\\caption{\\textbf{Semi-synthetic GEUVADIS evaluation.} ",
+         "Mean causal LD clusters tagged out of $5$ across thirty cis windows under PolyFun and ",
+         "uniform priors.}"),
   "\\label{tab:geuvadis_semisynth}",
   "\\centering\\small",
   "\\begin{tabular}{lcccc}", "\\toprule",

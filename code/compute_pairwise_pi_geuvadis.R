@@ -47,19 +47,17 @@ for (A in METHODS) for (B in METHODS) if (A != B)
 pbar <- rowMeans(P, na.rm = TRUE)
 ord  <- order(-pbar)
 
-fmt <- function(x) ifelse(is.na(x), "--", sprintf(paste0("%.", cfg$digits, "f"), x))
+fmt <- function(x) ifelse(is.na(x), "NA", sprintf(paste0("%.", cfg$digits, "f"), x))
 rows <- vapply(METHODS[ord], function(A) {
   paste0(A, " & ", paste(fmt(P[A, METHODS[ord]]), collapse = " & "),
          " & ", fmt(pbar[A]), " \\\\")
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Pairwise probability of superiority on the real GEUVADIS genes.} ",
-         "Entries are $\\hat\\pi(A > B)$, the proportion of the ", G, " genes on which the row method ",
-         "attains a strictly higher LD-aware replication rate than the column method (ties counted ",
-         "$1/2$), fixed $K=5$, ",
+  paste0("\\caption{\\rev{\\textbf{Paired per-gene probability of superiority.} ",
+         "Entries are $\\hat\\pi(A>B)$ for the fixed-$K=5$ GEUVADIS analysis under the ",
          if (cfg$prior == "tss") "TSS-proximity prior" else paste0(cfg$prior, " prior"),
-         " (LASSO is prior-free). $\\bar\\pi$: row mean. Rows and columns sorted by $\\bar\\pi$.}}"),
+         ", with ties counted as one half. $\\bar\\pi$ is the row mean.}}"),
   "\\label{tab:pi_geuvadis}",
   "\\centering\\small",
   paste0("\\begin{tabular}{l", paste(rep("c", length(METHODS) + 1L), collapse = ""), "}"),

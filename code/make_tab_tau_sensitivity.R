@@ -36,12 +36,7 @@ rows <- vapply(seq_len(nrow(d)), function(i)
          paste(sprintf("%.2f", as.numeric(d[i, taus])), collapse = " & "), " \\\\"), "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Sensitivity to the prior scale $\\tau$.} Mean number of causal ",
-         "variants recovered (out of $15$) at fixed $K=15$ in the controlled AR(1) design at $n=80$ ",
-         "(informative prior, $\\gamma=0.6$, averaged over $\\rho$ and replications), for ",
-         "$\\tau \\in \\{0.2, 0.5, 1\\}$. The ordering of the methods is unchanged across $\\tau$, and ",
-         "the exact scores of the joint methods are in addition stable in $\\tau$ on the real-LD ",
-         "selection experiment of Table~\\ref{tab:exact_select}.}}"),
+  "\\caption{\\rev{\\textbf{Sensitivity to the slab scale.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $\\tau\\in\\{0.2,0.5,1\\}$.}}",
   "\\label{tab:tau_sensitivity}",
   "\\centering\\small",
   paste0("\\begin{tabular}{l", paste(rep("c", length(taus)), collapse = ""), "}"),
