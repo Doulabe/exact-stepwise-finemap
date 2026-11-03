@@ -103,15 +103,7 @@ trows <- vapply(METHODS, function(m) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Redundancy diagnostics of the fixed-$K=5$ selections.} ",
-         "Each cell reports, over the $100$ genes, the mean number of distinct LD clusters ",
-         "covered by the five selected variants (greedy clustering of the selection at ",
-         "$|r| \\geq 0.7$ on EUR raw dosages, maximum $5$), the mean pairwise $|r|$ within the ",
-         "selection, and the mean share of the covered clusters containing at least one variant ",
-         "with LD-aware replication credit, which counts each tagged signal once however many ",
-         "proxies are selected. The prior-free LASSO ($\\hat K = 3.8$) attains ",
-         sprintf("$%.1f$ clusters, within-selection $|r|$ of $%.2f$ and a cluster-level rate of $%.2f$.", lass$C, lass$r, lass$cr),
-         "}}"),
+  "\\caption{\\textbf{Redundancy diagnostics of the fixed-$K=5$ selections.}}",
   "\\label{tab:geuvadis_clusters}",
   "\\centering\\scriptsize",
   "\\setlength{\\tabcolsep}{3pt}",

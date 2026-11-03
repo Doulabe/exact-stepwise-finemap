@@ -133,10 +133,10 @@ strat_row <- paste0("\\emph{Causal variants in the $p_j=0.8$ stratum} & ",
                     paste(sprintf("%.2f", strat), collapse = " & "), " \\\\")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Graded prior accuracy.} Mean causal variants recovered out of ",
+  paste0("\\caption{\\textbf{Graded prior accuracy.} Mean causal variants recovered out of ",
          "$15$ with F1 in parentheses across annotation AUC values in the controlled AR(1) design. ",
          "The first row gives the number of causal variants assigned $p_j=0.8$, and the prior-only ",
-         "row ranks by $p_j$ with marginal $|r|$ used to break ties.}}"),
+         "row ranks by $p_j$ with marginal $|r|$ used to break ties.}"),
   "\\label{tab:noisy_prior}",
   "\\centering\\small",
   "\\begin{tabular}{p{3.5cm}cccc}", "\\toprule",

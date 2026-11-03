@@ -5,8 +5,9 @@
 #
 # Generate the LaTeX tables of the GEUVADIS application from the benchmark
 # outputs. Main text: tab_geuvadis_fixedK (LD-aware replication, fixed-K,
-# nominal / permutation) and tab_geuvadis_adaptive (BIC stopping, same dual
-# reading). Supplement: tab_geuvadis_sensitivity (exact-variant and per-window
+# nominal / permutation), tab_geuvadis_adaptive (BIC stopping, nominal reading)
+# and tab_geuvadis_perm_bic (permutation reading of the BIC selections).
+# Supplement: tab_geuvadis_sensitivity (exact-variant and per-window
 # Bonferroni readings merged) and tab_geuvadis_semisynth (semi-synthetic arm).
 # Run FROM code/. Tables written to the repo root (../).
 # =============================================================================
@@ -76,8 +77,7 @@ writeLines(c(
   paste0("\\caption{\\textbf{Fixed-budget cross-population support in GEUVADIS.} ",
          "All methods in this table select $K=5$ variants per gene. Each cell gives the mean ",
          "LD-aware support rate over the $100$ genes under the nominal YRI test, followed by the ",
-         "rate under the per-window permutation threshold. The in-house methods and SuSiE receive ",
-         "the same prior weights within each arm.}"),
+         "rate under the per-window permutation threshold.}"),
   "\\label{tab:geuvadis_fixedK}",
   "\\centering\\small",
   "\\setlength{\\tabcolsep}{4pt}",
@@ -94,32 +94,31 @@ writeLines(c(
   "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_fixedK.tex")
 cat("Wrote ../tab_geuvadis_fixedK.tex \n")
 
-# ---- 2. main: adaptive BIC, nominal / permutation (+ mean selected size) -----
-# The permutation reading is merged into the main adaptive table (second value
-# of each cell); no separate perm_bic supplement table is emitted any more.
+# ---- 2. main: adaptive BIC, nominal (+ mean selected size) -------------------
+# The permutation reading of the BIC selections is emitted as the separate
+# main-text table tab_geuvadis_perm_bic below.
 w_k     <- wide_rate(ld, "BIC", "K") %>% filter(method != "SuSiE")
 w_n_bic <- wide_rate(ld %>% filter(method != "SuSiE"), "BIC", "rep_rate_ld")
 w_p_bic <- if (!is.null(permt))
   wide_rate(permt %>% filter(method != "SuSiE"), "BIC", "rep_rate_ld") else NULL
-rows2 <- vapply(seq_len(nrow(w_n_bic)), function(i) {
-  cells <- vapply(names(PRIORS), function(p) {
-    s <- fmt(w_n_bic[[p]][i])
-    if (!is.null(w_p_bic)) s <- paste0(s, " / ", fmt(w_p_bic[[p]][i]))
-    sprintf("%s (%.1f)", s, w_k[[p]][i])
+bic_rows <- function(w) {
+  r <- vapply(seq_len(nrow(w)), function(i) {
+    cells <- vapply(names(PRIORS), function(p)
+      sprintf("%s (%.1f)", fmt(w[[p]][i]), w_k[[p]][i]), "")
+    paste0(w$method[i], " & ", paste(cells, collapse = " & "), " \\\\")
   }, "")
-  paste0(w_n_bic$method[i], " & ", paste(cells, collapse = " & "), " \\\\")
-}, "")
-row2 <- function(m) rows2[match(m, w_n_bic$method)]
+  function(m) r[match(m, w$method)]
+}
+row2 <- bic_rows(w_n_bic)
+q <- if (file.exists("../results_qtltools_eval.rds"))
+  readRDS("../results_qtltools_eval.rds")$table else NULL
 writeLines(c(
   "\\begin{table}[htbp]",
   paste0("\\caption{\\textbf{Adaptive and native sparse selections in GEUVADIS.} ",
-         "For the in-house methods, each cell reports nominal / permutation-controlled LD-aware ",
-         "support, with the mean BIC-selected size $\\hat K$ in parentheses. LASSO and QTLtools ",
-         "are prior-free external references shown at their native operating points and therefore ",
-         "have one value across prior arms.}"),
+         "For the in-house methods, each cell reports the nominal LD-aware support rate, ",
+         "with the mean BIC-selected size $\\hat K$ in parentheses.}"),
   "\\label{tab:geuvadis_adaptive}",
-  "\\centering\\footnotesize",
-  "\\setlength{\\tabcolsep}{3.5pt}",
+  "\\centering\\small",
   "\\begin{tabular}{lcccc}", "\\toprule",
   paste0("Method & ", paste(PRIORS, collapse = " & "), " \\\\"), "\\midrule",
   grp("BIC-stopped single-SNP scores"),
@@ -128,17 +127,38 @@ writeLines(c(
   grp("BIC-stopped joint scores"),
   vapply(c("NaM", "ExM"), row2, ""),
   "\\midrule",
-  sprintf("LASSO (1-SE, prior-free) & \\multicolumn{4}{c}{%s%s \\quad ($\\hat K=%.1f$)} \\\\",
-          fmt(lstat$v),
-          if (!is.null(lstat_p)) paste0(" / ", fmt(lstat_p$v)) else "", lstat$K),
-  if (file.exists("../results_qtltools_eval.rds")) {
-    q <- readRDS("../results_qtltools_eval.rds")$table
-    sprintf("QTLtools (prior-free) & \\multicolumn{4}{c}{%s / %s \\quad ($\\hat K=%.1f$)} \\\\",
-            fmt(mean(q$rep_rate_ld, na.rm = TRUE)),
-            fmt(mean(q$rep_rate_ld_perm, na.rm = TRUE)), mean(q$K))
-  } else character(0),
+  sprintf("LASSO (1-SE, prior-free) & \\multicolumn{4}{c}{%s \\quad ($\\hat K=%.1f$)} \\\\",
+          fmt(lstat$v), lstat$K),
+  if (!is.null(q))
+    sprintf("QTLtools (prior-free) & \\multicolumn{4}{c}{%s \\quad ($\\hat K=%.1f$)} \\\\",
+            fmt(mean(q$rep_rate_ld, na.rm = TRUE)), mean(q$K))
+  else character(0),
   "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_adaptive.tex")
 cat("Wrote ../tab_geuvadis_adaptive.tex \n")
+
+# ---- 2b. main: permutation-controlled reading of the BIC selections ----------
+if (!is.null(w_p_bic)) {
+  row2p <- bic_rows(w_p_bic)
+  writeLines(c(
+    "\\begin{table}[htbp]",
+    paste0("\\caption{\\textbf{Permutation-controlled replication of the BIC-stopped selections.} ",
+           "The compact joint shortlists keep their lead, so their replication performance does ",
+           "not depend on the nominal $\\alpha=0.05$ threshold.}"),
+    "\\label{tab:geuvadis_perm_bic}",
+    "\\centering\\small",
+    "\\begin{tabular}{lcccc}", "\\toprule",
+    paste0("Method & ", paste(PRIORS, collapse = " & "), " \\\\"), "\\midrule",
+    vapply(c("NaW", "AsW", "ExW", "AsS", "NaM", "ExM"), row2p, ""),
+    "\\midrule",
+    sprintf("LASSO (1-SE, prior-free) & \\multicolumn{4}{c}{%s \\quad ($\\hat K=%.1f$)} \\\\",
+            fmt(lstat_p$v), lstat$K),
+    if (!is.null(q))
+      sprintf("QTLtools (prior-free) & \\multicolumn{4}{c}{%s \\quad ($\\hat K=%.1f$)} \\\\",
+              fmt(mean(q$rep_rate_ld_perm, na.rm = TRUE)), mean(q$K))
+    else character(0),
+    "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_perm_bic.tex")
+  cat("Wrote ../tab_geuvadis_perm_bic.tex \n")
+}
 
 # ---- 3+4. supplement: exact-variant and Bonferroni sensitivities (merged) ----
 w_ex <- wide_rate(ld, "fixedK", "rep_rate")
@@ -150,12 +170,12 @@ rows34 <- vapply(seq_len(nrow(w_ex)), function(i) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Replication sensitivities of the fixed-$K=5$ selections.} ",
+  paste0("\\caption{\\textbf{Replication sensitivities of the fixed-$K=5$ selections.} ",
          "Each cell reports, by prior specification, the exact-variant replication rate (crediting ",
          "a selected variant only when it replicates itself, no LD credit), followed by the ",
          "LD-aware rate under a per-window Bonferroni replication threshold $\\alpha/m$, at which ",
          "the $n=89$ replication set is underpowered. Both variants preserve the ordering of ",
-         "priors and methods of Table~\\ref{tab:geuvadis_fixedK} of the main text.}}"),
+         "priors and methods of Table~\\ref{tab:geuvadis_fixedK} of the main text.}"),
   "\\label{tab:geuvadis_sensitivity}",
   "\\centering\\small",
   "\\setlength{\\tabcolsep}{4pt}",
@@ -200,10 +220,10 @@ rows <- vapply(c(METHODS, "LASSO"), function(m) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Mean wall-clock time per gene window (s)} in the GEUVADIS application ",
+  paste0("\\caption{\\textbf{Mean wall-clock time per gene window (s)} in the GEUVADIS application ",
          "(median $m = 4{,}424$ candidate variants, $n = 373$, single-threaded ",
          "within each window), for the fixed-$K=5$ and the adaptive BIC-stopped runs. SuSiE and LASSO are ",
-         "run at fixed $K$ only.}}"),
+         "run at fixed $K$ only.}"),
   "\\label{tab:timing}",
   "\\centering\\small",
   "\\begin{tabular}{lcc}", "\\toprule",

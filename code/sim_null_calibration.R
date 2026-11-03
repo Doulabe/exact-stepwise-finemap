@@ -79,7 +79,7 @@ rows <- vapply(steps, function(k) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  "\\caption{\\rev{\\textbf{Conditional null calibration.} Empirical frequency of $p<0.05$ for the selected candidate and for a fixed reference candidate under exact $t$ and normal reference laws.}}",
+  "\\caption{\\textbf{Conditional null calibration.} Empirical frequency of $p<0.05$ for the selected candidate and for a fixed reference candidate under exact $t$ and normal reference laws.}",
   "\\label{tab:null_calibration}",
   "\\centering\\scriptsize",
   "\\setlength{\\tabcolsep}{3.5pt}",

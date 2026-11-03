@@ -111,15 +111,7 @@ trows <- vapply(seq_len(nrow(w)), function(i)
          " \\\\"), "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Conditional replication sensitivity (fixed $K=5$).} ",
-         "The stepwise selections are conditional by construction, so this variant replicates ",
-         "them conditionally as well. Variant $k$ of each ordered selection is tested in YRI ",
-         "given the $k-1$ variants selected before it (incremental regression on the ",
-         "residualized data, exact residual degrees of freedom), and counts as replicating ",
-         "when this conditional effect is sign-consistent with the corresponding EUR ",
-         "conditional effect and significant at $\\alpha=0.05$. Entries: mean share of ",
-         "conditionally replicating variants over the $100$ genes. The prior-free LASSO ",
-         "(ordered by $|$coefficient$|$) attains $", sprintf("%.3f", lasso), "$.}}"),
+  "\\caption{\\textbf{Conditional replication sensitivity (fixed $K=5$).}}",
   "\\label{tab:geuvadis_cond}",
   "\\centering\\small",
   "\\begin{tabular}{lcccc}", "\\toprule",

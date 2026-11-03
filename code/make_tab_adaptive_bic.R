@@ -67,7 +67,7 @@ header <- function(size = "\\small", colsep = "4pt") c(
 main_tab <- tibble(method = IH, criterion = "BIC")
 writeLines(c(
   "\\begin{table}[htbp]",
-  "\\caption{\\rev{\\textbf{BIC-stopped AR(1) selection.} F1 with mean selected size in parentheses across the three LD levels for $n=1000$.}}",
+  "\\caption{\\textbf{BIC-stopped AR(1) selection.} F1 with mean selected size in parentheses across the three LD levels for $n=1000$.}",
   "\\label{tab:synth_informative_adaptive}",
   header(), mk_rows(main_tab), "\\bottomrule", "\\end{tabular}", "\\end{table}"), cfg$out_main)
 cat("Wrote", cfg$out_main, "\n")
@@ -79,7 +79,7 @@ best_tab <- A %>% filter(rho_intra == rhos[2] | length(rhos) == 1L) %>%
 best_tab <- best_tab[match(names(PRETTY), best_tab$method), ] %>% filter(!is.na(method))
 writeLines(c(
   "\\begin{table}[htbp]",
-  "\\caption{\\rev{\\textbf{Adaptive stopping sensitivity.} Best F1 obtained by each method over the evaluated stopping rules, with the selected rule and mean size in brackets.}}",
+  "\\caption{\\textbf{Adaptive stopping sensitivity.} Best F1 obtained by each method over the evaluated stopping rules, with the selected rule and mean size in brackets.}",
   "\\label{tab:synth_adaptive_best}",
   header("\\scriptsize", "2.5pt"), mk_rows(best_tab, show_rule = TRUE), "\\bottomrule", "\\end{tabular}", "\\end{table}"),
   cfg$out_best)

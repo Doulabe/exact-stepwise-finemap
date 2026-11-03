@@ -45,12 +45,12 @@ lasso <- tab %>% filter(method == "LASSO") %>%
 
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Out-of-sample adjusted $R^2$ in the YRI replication panel.} ",
+  paste0("\\caption{\\textbf{Out-of-sample adjusted $R^2$ in the YRI replication panel.} ",
          "Mean adjusted $R^2$ of the selected set over the $100$ genes, by prior specification, at ",
          "fixed $K=5$ (top block) and under BIC stopping (bottom block, mean selected size $\\hat K$ ",
          "in parentheses). The larger single-SNP selections under BIC buy a larger out-of-sample ",
          "$R^2$ at a lower per-variant replication rate (Table~\\ref{tab:geuvadis_adaptive}). ",
-         "The prior-free LASSO attains $", fmt(lasso$v), "$ with $\\hat K=", sprintf("%.1f", lasso$K), "$.}}"),
+         "The prior-free LASSO attains $", fmt(lasso$v), "$ with $\\hat K=", sprintf("%.1f", lasso$K), "$.}"),
   "\\label{tab:geuvadis_r2}",
   "\\centering\\small",
   "\\begin{tabular}{lcccc}", "\\toprule",

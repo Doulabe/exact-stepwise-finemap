@@ -57,12 +57,12 @@ rows <- rows[-length(rows)]
 
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Sensitivity to the amplitude of the prior weights.} ",
+  paste0("\\caption{\\textbf{Sensitivity to the amplitude of the prior weights.} ",
          "Mean LD-aware replication rate of the fixed-$K=5$ selections (nominal test) when the ",
          "three-level prior scale of the main analysis, $\\{0.3, 0.5, 0.7\\}$, is replaced by a ",
          "weaker $\\{0.4, 0.5, 0.6\\}$ or a stronger $\\{0.2, 0.5, 0.8\\}$ contrast, level by ",
          "level. The uniform arm is constant at $0.5$ and hence invariant by construction. Its ",
-         "repetition across scales is an internal consistency check.}}"),
+         "repetition across scales is an internal consistency check.}"),
   "\\label{tab:geuvadis_prior_scale}",
   "\\centering\\small",
   "\\setlength{\\tabcolsep}{4pt}",

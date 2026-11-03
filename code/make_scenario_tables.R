@@ -44,12 +44,12 @@ if (file.exists(PO)) {
     group_by(scenario, n) %>% summarise(M = mean(M), .groups = "drop")
   v <- unlist(lapply(c(80, 1000), function(nn) sapply(names(SC), function(s) {
     x <- po$M[po$scenario == s & po$n == nn]; if (length(x)) fmt(x) else "{--}" })))
-  po_row <- c(paste0("\\rev{Prior-only ranking} & ", paste(v, collapse = " & "), " \\\\"),
+  po_row <- c(paste0("Prior-only ranking & ", paste(v, collapse = " & "), " \\\\"),
               "\\midrule")
 }
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  "\\caption{\\rev{\\textbf{Controlled AR(1) results across prior scenarios.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $n=80$ and $n=1000$, averaged over the three LD levels.}}",
+  "\\caption{\\textbf{Controlled AR(1) results across prior scenarios.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $n=80$ and $n=1000$, averaged over the three LD levels.}",
   "\\label{tab:synth_scenarios}", "\\scriptsize", "\\setlength{\\tabcolsep}{4pt}",
   "\\begin{tabular}{lcccccccc}", "\\toprule",
   " & \\multicolumn{4}{c}{$n=80$} & \\multicolumn{4}{c}{$n=1000$} \\\\",
@@ -69,7 +69,7 @@ row2 <- function(m) {
 }
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  "\\caption{\\rev{\\textbf{Single-locus prior sensitivity.} Mean causal variants recovered out of $3$ at fixed $K=3$ across the four prior scenarios.}}",
+  "\\caption{\\textbf{Single-locus prior sensitivity.} Mean causal variants recovered out of $3$ at fixed $K=3$ across the four prior scenarios.}",
   "\\label{tab:locus_scenarios}", "\\small", "\\setlength{\\tabcolsep}{6pt}",
   "\\begin{tabular}{lcccc}", "\\toprule",
   paste0("Method & ", paste(SC, collapse = " & "), " \\\\"), "\\midrule",
@@ -97,7 +97,7 @@ cat(sprintf("max |M(ExM) - M(NaM)|: n = 80 %.3f, other designs %.3f\n", gap, gap
 nb <- names(blocks)
 writeLines(c(
   "\\begin{table}[htbp]", "\\centering",
-  "\\caption{\\rev{\\textbf{Stopping rules for ExM.} Mean causal variants recovered with mean selected size in brackets across controlled and single-locus designs.}}",
+  "\\caption{\\textbf{Stopping rules for ExM.} Mean causal variants recovered with mean selected size in brackets across controlled and single-locus designs.}",
   "\\label{tab:stop_joint}", "\\scriptsize", "\\setlength{\\tabcolsep}{3pt}",
   paste0("\\begin{tabular}{l", strrep("c", length(rules)), "}"), "\\toprule",
   paste0("Design and prior & ", paste(rules, collapse = " & "), " \\\\"), "\\midrule",

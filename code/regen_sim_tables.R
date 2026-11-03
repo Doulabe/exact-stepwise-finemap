@@ -103,7 +103,7 @@ if (has("results_bench_synth_informative.rds")) {
     v <- vapply(rhos, function(r) {
       x <- po$F1[abs(po$rho_intra - r) < 1e-6]
       if (length(x)) mean(x) else NA_real_ }, 0)
-    rows <- c(rows, sprintf("\\rev{Prior-only ranking} & %s \\\\",
+    rows <- c(rows, sprintf("Prior-only ranking & %s \\\\",
                             paste(fmt(v, 3), collapse = " & ")), "\\midrule")
   }
   for (m in meths) {
@@ -265,7 +265,7 @@ if (has("results_bench_synth_informative_n80.rds")) {
   "\\caption{\\textbf{Small-sample fixed-$K$ results at $n=80$.} The obtained $\\hat M$ (Mean causal variants recovered out of $15$) with F1 in parentheses under the informative prior.}",
     "\\label{tab:smalln}", "\\scriptsize", "\\setlength{\\tabcolsep}{5pt}",
     "\\renewcommand{\\arraystretch}{1.12}", "\\begin{tabular}{lccc}", "\\toprule",
-    "\\textbf{Method / contrast} & $\\gamma=0.2$ & $\\gamma=0.6$ & $\\gamma=0.9$ \\\\", "\\midrule",
+    "\\textbf{Method} & $\\gamma=0.2$ & $\\gamma=0.6$ & $\\gamma=0.9$ \\\\", "\\midrule",
     line("AsW", "Asymptotic_Wald"), line("ExW", "Exact_Wald"),
     delta("$\\Delta$(ExW-AsW)", "Exact_Wald", "Asymptotic_Wald"), "\\addlinespace[2pt]",
     line("AsS", "Asymptotic_Score"), "\\addlinespace[2pt]",
@@ -294,10 +294,10 @@ if (has("results_bench_synth_informative_n80_adaptive.rds")) {
     signed(get(a, g)$F1 - get(b, g)$F1, 3), ""), collapse = " & "), " \\\\")
   writeLines(c(
     "\\begin{table}[H]", "\\centering",
-    "\\caption{\\textbf{Small-sample evaluation at $n=80$, adaptive stopping (robustness check).} Same design as Table~\\ref{tab:smalln}, each in-house method stopping by its best data-driven rule; we report the best F1 (averaged over $\\rho$), the selected rule and mean size $\\hat K$ (iteration cap $30$). \\rev{The joint variants stop near the true size ($15$) under the posterior rule $q>0.5$.}}",
+    "\\caption{\\textbf{Small-sample adaptive results at $n=80$.} Best F1 with the selected rule and mean selected size for each in-house method.}",
     "\\label{tab:smalln_adaptive}", "\\scriptsize", "\\setlength{\\tabcolsep}{3pt}",
     "\\renewcommand{\\arraystretch}{1.12}", "\\begin{tabularx}{\\textwidth}{lXXX}", "\\toprule",
-    "\\textbf{Method / contrast} & $\\gamma=0.2$ & $\\gamma=0.6$ & $\\gamma=0.9$ \\\\", "\\midrule",
+    "\\textbf{Method} & $\\gamma=0.2$ & $\\gamma=0.6$ & $\\gamma=0.9$ \\\\", "\\midrule",
     line("AsW", "Asymptotic_Wald"), line("ExW", "Exact_Wald"),
     delta("$\\Delta$F1(ExW - AsW)", "Exact_Wald", "Asymptotic_Wald"), "\\addlinespace[2pt]",
     line("AsS", "Asymptotic_Score"), "\\addlinespace[2pt]",

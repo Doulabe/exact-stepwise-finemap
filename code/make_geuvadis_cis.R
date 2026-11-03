@@ -104,13 +104,10 @@ build <- function(sel) {
 rows_fixed <- build("fixedK")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Block-bootstrap confidence intervals for the LD-aware ",
+  paste0("\\caption{\\textbf{Block-bootstrap confidence intervals for the LD-aware ",
          "replication rates.} Mean LD-aware replication rate at fixed $K=5$ with $95\\%$ ",
-         "percentile intervals from $", cfg$B, "$ bootstrap resamples of the $66$ disjoint ",
-         "genomic regions formed by merging the hundred overlapping cis windows, so that ",
-         "genes sharing local LD enter the resample together. Last column: per-gene ",
-         "difference between the TSS-proximity and uniform priors. The BIC-stopping ",
-         "analogue gives the same picture.}}"),
+         "percentile intervals. Last column: per-gene difference between the TSS-proximity ",
+         "and uniform priors. The BIC-stopping analogue gives the same picture.}"),
   "\\label{tab:geuvadis_ci}",
   "\\centering\\scriptsize",
   "\\setlength{\\tabcolsep}{3pt}",

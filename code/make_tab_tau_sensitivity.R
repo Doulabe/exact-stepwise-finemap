@@ -36,7 +36,7 @@ rows <- vapply(seq_len(nrow(d)), function(i)
          paste(sprintf("%.2f", as.numeric(d[i, taus])), collapse = " & "), " \\\\"), "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  "\\caption{\\rev{\\textbf{Sensitivity to the slab scale.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $\\tau\\in\\{0.2,0.5,1\\}$.}}",
+  "\\caption{\\textbf{Sensitivity to the slab scale.} Mean causal variants recovered out of $15$ at fixed $K=15$ for $\\tau\\in\\{0.2,0.5,1\\}$.}",
   "\\label{tab:tau_sensitivity}",
   "\\centering\\small",
   paste0("\\begin{tabular}{l", paste(rep("c", length(taus)), collapse = ""), "}"),

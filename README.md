@@ -73,7 +73,7 @@ expression (European discovery, Yoruba replication).
     ├── regen_sim_tables.R            # regenerate every simulation and GEUVADIS table from result files
     ├── make_scenario_tables.R        # four-prior-scenario tables (AR(1) m = 5,000, locus, stopping rules)
     ├── make_tab_timing.R             # timing-table rows from a GEUVADIS real-mode result
-    ├── fill_geuvadis_tables.R        # GEUVADIS tables (fixed K, adaptive, exact-variant, Bonferroni, semi-synthetic, timing)
+    ├── fill_geuvadis_tables.R        # GEUVADIS tables (fixed K, adaptive, permutation BIC, exact-variant, Bonferroni, semi-synthetic, timing)
     ├── compute_pairwise_pi_geuvadis.R  # pairwise probability of superiority across the GEUVADIS genes
     │
     ├── # --- independent validation of the exact prior integrals ---

@@ -54,10 +54,10 @@ rows <- vapply(METHODS[ord], function(A) {
 }, "")
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\rev{\\textbf{Paired per-gene probability of superiority.} ",
+  paste0("\\caption{\\textbf{Paired per-gene probability of superiority.} ",
          "Entries are $\\hat\\pi(A>B)$ for the fixed-$K=5$ GEUVADIS analysis under the ",
          if (cfg$prior == "tss") "TSS-proximity prior" else paste0(cfg$prior, " prior"),
-         ", with ties counted as one half. $\\bar\\pi$ is the row mean.}}"),
+         ", with ties counted as one half. $\\bar\\pi$ is the row mean.}"),
   "\\label{tab:pi_geuvadis}",
   "\\centering\\small",
   paste0("\\begin{tabular}{l", paste(rep("c", length(METHODS) + 1L), collapse = ""), "}"),
