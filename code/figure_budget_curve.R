@@ -3,7 +3,7 @@
 # Project: exact-stepwise-finemap (Exact association-test distributions for prior-informed stepwise SNP prioritization)
 # Author: N.K. Doulabe
 #
-# Replication-versus-budget curve for the GEUVADIS application: mean LD-aware
+# Replication-versus-selection-size curve for the GEUVADIS application: mean LD-aware
 # replication rate of the first K' selected variants, K' = 1..5, for the joint
 # stepwise scores (ExM, NaM), SuSiE and LASSO, under the TSS-proximity prior
 # (LASSO is prior-free). Selections are stored in path / PIP / coefficient
@@ -60,7 +60,7 @@ for (i in seq_along(genes)) {
   }
 }
 curve <- apply(rate, c(2, 3), mean, na.rm = TRUE)
-cat("Mean LD-aware replication rate by budget K' (prior:", cfg$prior, ")\n")
+cat("Mean LD-aware replication rate by selection size K' (prior:", cfg$prior, ")\n")
 print(round(curve, 3))
 
 pdf(cfg$out, width = 5.6, height = 4.2, pointsize = 10)
@@ -69,7 +69,7 @@ cols <- c(ExM = "#D55E00", NaM = "#E69F00", SuSiE = "#0072B2", LASSO = "#009E73"
 pchs <- c(ExM = 16, NaM = 17, SuSiE = 15, LASSO = 18)
 matplot(seq_len(cfg$Kmax), t(curve), type = "o", lty = 1, lwd = 1.6,
         pch = pchs[rownames(curve)], col = cols[rownames(curve)],
-        xlab = "Selection budget K' (first K' selected variants)",
+        xlab = "Selection size K' (first K' selected variants)",
         ylab = "Mean LD-aware replication rate", ylim = c(0.55, 0.9), xaxt = "n")
 axis(1, at = seq_len(cfg$Kmax))
 legend("topright", legend = rownames(curve), col = cols[rownames(curve)],

@@ -74,7 +74,7 @@ lstat_p <- if (!is.null(permt)) permt %>% filter(method == "LASSO") %>%
   summarise(v = mean(rep_rate_ld, na.rm = TRUE)) else NULL
 writeLines(c(
   "\\begin{table}[htbp]",
-  paste0("\\caption{\\textbf{Fixed-budget cross-population support in GEUVADIS.} ",
+  paste0("\\caption{\\textbf{Fixed-$K$ cross-population support in GEUVADIS.} ",
          "All methods in this table select $K=5$ variants per gene. Each cell gives the mean ",
          "LD-aware support rate over the $100$ genes under the nominal YRI test, followed by the ",
          "rate under the per-window permutation threshold.}"),
@@ -89,7 +89,7 @@ writeLines(c(
   grp("Joint stepwise scores"),
   vapply(c("NaM", "ExM"), row1, ""),
   "\\addlinespace",
-  grp("Fine-mapping comparator at the same budget"),
+  grp("Fine-mapping comparator at the same selection size"),
   row1("SuSiE"),
   "\\bottomrule", "\\end{tabular}", "\\end{table}"), "../tab_geuvadis_fixedK.tex")
 cat("Wrote ../tab_geuvadis_fixedK.tex \n")
